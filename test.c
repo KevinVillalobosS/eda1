@@ -170,7 +170,7 @@ void leer(pixel matriz[altoPixeles][anchoPixeles], char auxLectura, FILE *archiv
             matriz[i][j].Green = pixel2;
             matriz[i][j].Blue = pixel3;
             contador = contador + 1;
-            /* printf("%d %d %d \n", pixel, pixel2, pixel3);*/
+            /*printf("%d %d %d \n", pixel, pixel2, pixel3);*/
         }
     }  
 }
@@ -180,27 +180,23 @@ void leerImagen(pixel **imagen, char auxLectura, FILE *archivo){
 	int pixel2; 
 	int pixel3; 
 	char* coma = (char*)malloc(4*sizeof(char)); 
-    int contador = 0;
 	for (int i = 0; i < altoImagen; i++){
         for (int j = 0; j < anchoImagen; j++){
-            if (contador == anchoImagen-1){
+            if (j == anchoImagen-1){
                 auxLectura = fscanf(archivo, "%d %c %d %c %d\n", &pixel, coma, &pixel2, coma, &pixel3); 
-                contador = 0;
             }else{
                 auxLectura = fscanf(archivo, "%d %c %d %c %d", &pixel, coma, &pixel2, coma, &pixel3); 
             }
             imagen[i][j].Red = pixel;
             imagen[i][j].Green = pixel2;
             imagen[i][j].Blue = pixel3;
-            contador = contador + 1;
-            /*printf("%d %d %d \n", i, j, 0);*/
         }
     }  
 }
 
 int leerInstrucciones (char* nombre){ 
     FILE *archivo0;
-    archivo0 = fopen("buscar3.in","r");
+    archivo0 = fopen("buscar2.in","r");
 	char auxLectura0;
     auxLectura0 = fscanf(archivo0, "%d[^ ]", &anchoPixeles);
     auxLectura0 = fscanf(archivo0, "%d[^\n]", &altoPixeles);
@@ -211,7 +207,7 @@ int leerInstrucciones (char* nombre){
     fclose(archivo0);
 
     FILE *archivo1;
-    archivo1 = fopen("matriz2.in","r");
+    archivo1 = fopen("imagen2.in","r");
 	char auxLectura1;
     auxLectura1 = fscanf(archivo1, "%d[^ ]", &anchoImagen);
     auxLectura1 = fscanf(archivo1, "%d[^\n]", &altoImagen);
@@ -219,9 +215,8 @@ int leerInstrucciones (char* nombre){
     /*pixel imagen[altoImagen][anchoImagen] = malloc(sizeof(int));*/
     pixel **imagen = (pixel **)malloc(anchoImagen * 4 * altoImagen *sizeof(pixel *));
     for (int i = 0; i < altoImagen; ++i){
-        imagen[i] = (pixel *)malloc(altoImagen * sizeof(pixel));
+        imagen[i] = (pixel *)malloc(anchoImagen * sizeof(pixel));
     }
-
     leerImagen(imagen,auxLectura1,archivo1);
 
     pixel rotada90[anchoPixeles][altoPixeles];
@@ -238,12 +233,8 @@ int leerInstrucciones (char* nombre){
     buscarImagen(rotada180, imagen,180);
     buscarImagen(rotada270, imagen,270);
 
-    free(pixeles);
     free(imagen);
-    free(rotada90);
-    free(rotada180);
-    free(rotada270);
-
+ 
     fclose(archivo1);
     return 0;
 }
