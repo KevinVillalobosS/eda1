@@ -189,14 +189,14 @@ void leerImagen(pixel imagen[altoImagen][anchoImagen], char auxLectura, FILE *ar
             imagen[i][j].Green = pixel2;
             imagen[i][j].Blue = pixel3;
             contador = contador + 1;
-            /* printf("%d %d %d \n", pixel, pixel2, pixel3);*/
+            printf("%d %d %d \n", i, j, 0);
         }
     }  
 }
 
 int leerInstrucciones (char* nombre){ 
     FILE *archivo0;
-    archivo0 = fopen("buscarR2.in","r");
+    archivo0 = fopen("buscar3.in","r");
 	char auxLectura0;
     auxLectura0 = fscanf(archivo0, "%d[^ ]", &anchoPixeles);
     auxLectura0 = fscanf(archivo0, "%d[^\n]", &altoPixeles);
@@ -204,25 +204,30 @@ int leerInstrucciones (char* nombre){
     leer(pixeles,auxLectura0,archivo0, anchoPixeles*altoPixeles);
 
     fclose(archivo0);
-   
+
     FILE *archivo1;
-    archivo1 = fopen("imagenR2.in","r");
+    archivo1 = fopen("imagen3.in","r");
+
 	char auxLectura1;
-	int ancho1 = 0;
-	int alto1 = 0;
     auxLectura1 = fscanf(archivo1, "%d[^ ]", &anchoImagen);
     auxLectura1 = fscanf(archivo1, "%d[^\n]", &altoImagen);
-    int total1 = ancho1*alto1;
-    pixel imagen[altoImagen][anchoImagen];
-    imagen[0][0].Red = ancho1;
+
+    /*pixel imagen[altoImagen][anchoImagen] = malloc(sizeof(int));*/
+    pixel **imagen = (pixel **)malloc(anchoImagen * altoImagen * 4 * sizeof(pixel *));
+    for (int i = 0; i < altoImagen; i++){
+        imagen[i] = (pixel *)malloc(anchoImagen * sizeof(pixel));
+    }
+
+    printf("pase");
     leerImagen(imagen,auxLectura1,archivo1, anchoImagen*altoImagen);
+    printf("no pase");
 
     pixel rotada90[anchoPixeles][altoPixeles];
     rotarPixeles90(rotada90, pixeles);
 
     pixel rotada180[altoPixeles][anchoPixeles];
     rotarPixeles180(rotada180, pixeles);
-    
+
     pixel rotada270[anchoPixeles][altoPixeles];
     rotarPixeles270(rotada270, pixeles);
 
@@ -231,13 +236,14 @@ int leerInstrucciones (char* nombre){
     buscarImagen(rotada180, imagen,180);
     buscarImagen(rotada270, imagen,270);
 
+    free(pixeles);
+    free(imagen);
+    /*free(rotada90);
+    free(rotada180);
+    free(rotada270);*/
 
     fclose(archivo1);
     return 0;
-}
-
-
-void inicializar(){
 }
 
 /* Función main inicia la ejecución del programa */
