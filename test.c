@@ -82,7 +82,7 @@ int verificarIgualdad(pixel porRevisar[altoPixeles][anchoPixeles], pixel pixeles
     }
 }
 
-void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel imagen[altoImagen][anchoImagen], int indicador){
+void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel **imagen, int indicador){
     pixel primero;
     primero.Red = pixeles[0][0].Red;
     primero.Green = pixeles[0][0].Green;
@@ -91,11 +91,17 @@ void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel imagen[altoIma
     /*printf("%i %i %i\n",primero[0],primero[1],primero[2]);*/
  	for (int i = 0; i < altoImagen; i++){
         for (int j = 0; j < anchoImagen; j++){
+            /*printf("%i , %i : %i\n",i,j,indicador);
+            printf("%d %d %d \n", imagen[i][j].Red, imagen[i][j].Green, imagen[i][j].Blue);*/
             if (imagen[i][j].Red == primero.Red && imagen[i][j].Green == primero.Green && imagen[i][j].Blue == primero.Blue){
                 bool sePaso = false;
                 if (indicador == 0 || indicador == 180){
                     pixel porRevisar[altoPixeles][anchoPixeles];
                     for (int k = 0; k < altoPixeles; k++){
+                        if (sePaso || (i+k >= altoImagen)){
+                            sePaso = true;
+                            break;
+                        }
                         for (int m = 0; m < anchoPixeles; m++){
                             if (j+m >= anchoImagen){
                                 sePaso = true;
@@ -105,10 +111,7 @@ void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel imagen[altoIma
                             porRevisar[k][m].Green = imagen[i+k][j+m].Green;
                             porRevisar[k][m].Blue = imagen[i+k][j+m].Blue;
                         }
-                        if (sePaso || (i+k >= altoImagen)){
-                            sePaso = true;
-                            break;
-                        }
+                        
                     }/*end Main For*/
                     if (!(sePaso)){
                         contador = verificarIgualdad(porRevisar, pixeles, contador);
@@ -116,6 +119,10 @@ void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel imagen[altoIma
                 }else{
                     pixel porRevisar[anchoPixeles][altoPixeles];
                     for (int k = 0; k < anchoPixeles; k++){
+                        if (sePaso || (i+k >= altoImagen)){
+                            sePaso = true;
+                            break;
+                        }
                         for (int m = 0; m < altoPixeles; m++){
                             if (j+m >= anchoImagen){
                                 sePaso = true;
@@ -125,10 +132,7 @@ void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel imagen[altoIma
                             porRevisar[k][m].Green = imagen[i+k][j+m].Green;
                             porRevisar[k][m].Blue = imagen[i+k][j+m].Blue;
                         }
-                        if (sePaso || (i+k >= altoImagen)){
-                            sePaso = true;
-                            break;
-                        }
+                        
                     }/*end Main For*/
                     if (!(sePaso)){
                         contador = verificarIgualdad(porRevisar, pixeles, contador);
@@ -148,7 +152,7 @@ void buscarImagen(pixel pixeles[altoPixeles][anchoPixeles], pixel imagen[altoIma
 }
 
 
-void leer(pixel matriz[altoPixeles][anchoPixeles], char auxLectura, FILE *archivo, int totalMatriz){
+void leer(pixel matriz[altoPixeles][anchoPixeles], char auxLectura, FILE *archivo){
     int pixel; 
 	int pixel2; 
 	int pixel3; 
@@ -171,7 +175,7 @@ void leer(pixel matriz[altoPixeles][anchoPixeles], char auxLectura, FILE *archiv
     }  
 }
 
-void leerImagen(pixel imagen[altoImagen][anchoImagen], char auxLectura, FILE *archivo, int totalMatriz){
+void leerImagen(pixel **imagen, char auxLectura, FILE *archivo){
     int pixel; 
 	int pixel2; 
 	int pixel3; 
@@ -189,7 +193,7 @@ void leerImagen(pixel imagen[altoImagen][anchoImagen], char auxLectura, FILE *ar
             imagen[i][j].Green = pixel2;
             imagen[i][j].Blue = pixel3;
             contador = contador + 1;
-            printf("%d %d %d \n", i, j, 0);
+            /*printf("%d %d %d \n", i, j, 0);*/
         }
     }  
 }
@@ -201,26 +205,24 @@ int leerInstrucciones (char* nombre){
     auxLectura0 = fscanf(archivo0, "%d[^ ]", &anchoPixeles);
     auxLectura0 = fscanf(archivo0, "%d[^\n]", &altoPixeles);
     pixel pixeles[anchoPixeles][altoPixeles];
-    leer(pixeles,auxLectura0,archivo0, anchoPixeles*altoPixeles);
+    
+    leer(pixeles,auxLectura0,archivo0);
 
     fclose(archivo0);
 
     FILE *archivo1;
-    archivo1 = fopen("imagen3.in","r");
-
+    archivo1 = fopen("matriz2.in","r");
 	char auxLectura1;
     auxLectura1 = fscanf(archivo1, "%d[^ ]", &anchoImagen);
     auxLectura1 = fscanf(archivo1, "%d[^\n]", &altoImagen);
 
     /*pixel imagen[altoImagen][anchoImagen] = malloc(sizeof(int));*/
-    pixel **imagen = (pixel **)malloc(anchoImagen * altoImagen * 4 * sizeof(pixel *));
-    for (int i = 0; i < altoImagen; i++){
-        imagen[i] = (pixel *)malloc(anchoImagen * sizeof(pixel));
+    pixel **imagen = (pixel **)malloc(anchoImagen * 4 * altoImagen *sizeof(pixel *));
+    for (int i = 0; i < altoImagen; ++i){
+        imagen[i] = (pixel *)malloc(altoImagen * sizeof(pixel));
     }
 
-    printf("pase");
-    leerImagen(imagen,auxLectura1,archivo1, anchoImagen*altoImagen);
-    printf("no pase");
+    leerImagen(imagen,auxLectura1,archivo1);
 
     pixel rotada90[anchoPixeles][altoPixeles];
     rotarPixeles90(rotada90, pixeles);
@@ -238,9 +240,9 @@ int leerInstrucciones (char* nombre){
 
     free(pixeles);
     free(imagen);
-    /*free(rotada90);
+    free(rotada90);
     free(rotada180);
-    free(rotada270);*/
+    free(rotada270);
 
     fclose(archivo1);
     return 0;
