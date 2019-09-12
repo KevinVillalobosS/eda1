@@ -20,3 +20,6 @@ int main(){
     }
     
 }
+/*printf("%d %d %d %d \n", matriz[i][0], matriz[i][1], matriz[i][2], i);
+        printf("%d %d %d %d \n", pixeles[i][0], pixeles[i][1], pixeles[i][2], i);
+        printf("---------------\n");*/   
